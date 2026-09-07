@@ -1,0 +1,733 @@
+<title>취준 OS 기획안</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#17202B; --ink-2:#49535F; --muted:#77818E;
+  --line:#D6DCE3; --line-strong:#B9C2CC;
+  --accent:#0E6A72; --accent-ink:#0B565D; --accent-soft:#DCEFF0;
+  --warn:#8F5410; --warn-soft:#FBEBD3;
+  --ok:#2E6A3A; --ok-soft:#DFF0E2;
+  --code-bg:#E9EEF2;
+  --shadow:0 1px 2px rgba(23,32,43,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1318; --surface:#151C24; --ink:#E6EBF1; --ink-2:#B4BEC9; --muted:#8591A0;
+    --line:#26303B; --line-strong:#38444F;
+    --accent:#5BC5CD; --accent-ink:#8ADAE0; --accent-soft:#11343A;
+    --warn:#E3A957; --warn-soft:#3A2A11;
+    --ok:#7CC489; --ok-soft:#173222;
+    --code-bg:#1B242E;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1318; --surface:#151C24; --ink:#E6EBF1; --ink-2:#B4BEC9; --muted:#8591A0;
+  --line:#26303B; --line-strong:#38444F;
+  --accent:#5BC5CD; --accent-ink:#8ADAE0; --accent-soft:#11343A;
+  --warn:#E3A957; --warn-soft:#3A2A11;
+  --ok:#7CC489; --ok-soft:#173222;
+  --code-bg:#1B242E;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;font-size:15.5px;line-height:1.7;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+a{color:var(--accent-ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 24px 96px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px}
+@media (max-width:980px){.wrap{grid-template-columns:minmax(0,1fr);gap:24px;padding:24px 16px 72px}nav.toc{position:static;border:0;padding:0}}
+nav.toc{position:sticky;top:24px;align-self:start;font-size:13px;border-left:1px solid var(--line);padding-left:16px}
+nav.toc .eyebrow{margin-bottom:10px}
+nav.toc a{display:block;color:var(--ink-2);text-decoration:none;padding:3px 0;line-height:1.45}
+nav.toc a:hover{color:var(--accent-ink)}
+nav.toc a.sub{padding-left:14px;color:var(--muted)}
+main{min-width:0;max-width:760px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header.doc h1{font-size:34px;line-height:1.25;margin:6px 0 10px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+header.doc p.lede{font-size:17px;color:var(--ink-2);margin:0 0 18px;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:13px;color:var(--muted);padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta b{color:var(--ink-2);font-weight:500}
+section{margin-top:56px}
+h2{font-size:23px;margin:0 0 6px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+h2 + .eyebrow{margin-bottom:16px}
+h3{font-size:17px;margin:32px 0 8px;font-weight:600}
+h4{font-size:15px;margin:18px 0 6px;font-weight:600;color:var(--ink)}
+p{margin:0 0 12px;max-width:68ch}
+ul,ol{margin:0 0 12px;padding-left:20px;max-width:68ch}
+li{margin:4px 0}
+li::marker{color:var(--muted)}
+.callout{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);padding:14px 18px;margin:16px 0 20px;box-shadow:var(--shadow)}
+.callout.warn{border-left-color:var(--warn)}
+.callout p:last-child,.callout ul:last-child{margin-bottom:0}
+.callout .eyebrow{margin-bottom:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0 20px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.two > div{background:var(--surface);border:1px solid var(--line);padding:14px 16px}
+.two h4{margin:0 0 8px}
+.two ul{margin:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 20px}
+.tbl{overflow-x:auto;margin:12px 0 20px}
+.tbl table{margin:0;min-width:520px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600;font-size:12.5px;letter-spacing:.03em;color:var(--ink-2);border-bottom:1px solid var(--line-strong);white-space:nowrap}
+td .mono{font-size:13px}
+tbody tr:last-child td{border-bottom:0}
+.num{font-variant-numeric:tabular-nums}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--code-bg);padding:1px 5px;border-radius:3px}
+pre{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.55;background:var(--code-bg);padding:14px 16px;overflow-x:auto;margin:12px 0 20px;border:1px solid var(--line)}
+.chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.03em;padding:2px 8px;border:1px solid var(--line-strong);color:var(--ink-2);border-radius:2px;white-space:nowrap}
+.chip.accent{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.chip.warn{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.chip.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+/* module spec */
+.module{background:var(--surface);border:1px solid var(--line);margin:24px 0;box-shadow:var(--shadow)}
+.module .head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline}
+.module .head h3{margin:0;font-size:18px}
+.module .head .code{font-family:"IBM Plex Mono",monospace;color:var(--accent-ink);font-weight:600;font-size:13px}
+.module .head .chips{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.spec{display:grid;grid-template-columns:118px minmax(0,1fr)}
+.spec > div{padding:12px 20px;border-bottom:1px solid var(--line)}
+.spec > div:nth-last-child(-n+2){border-bottom:0}
+.spec .k{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:15px;border-right:1px solid var(--line)}
+.spec ul{margin:0;padding-left:18px}
+.spec p{margin:0 0 6px}
+.spec p:last-child{margin:0}
+@media (max-width:640px){.spec{grid-template-columns:1fr}.spec .k{border-right:0;border-bottom:0;padding-bottom:0}.spec > div:nth-last-child(-n+2){border-bottom:1px solid var(--line)}.spec > div:last-child{border-bottom:0}}
+/* architecture diagram */
+.arch{display:grid;gap:8px;margin:16px 0 24px;font-size:13px}
+.arch .layer{border:1px solid var(--line-strong);background:var(--surface);padding:10px 12px}
+.arch .layer .lab{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.arch .boxes{display:flex;flex-wrap:wrap;gap:6px}
+.arch .box{border:1px solid var(--line);background:var(--bg);padding:4px 10px;font-size:12.5px;line-height:1.4}
+.arch .box.hi{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink);font-weight:600}
+.arch .layer.core{border-color:var(--accent);border-width:1.5px}
+.arch .split{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:640px){.arch .split{grid-template-columns:1fr}}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0 18px;font-size:13px}
+.flow .step{border:1px solid var(--line-strong);background:var(--surface);padding:5px 10px}
+.flow .sep{color:var(--muted);font-family:"IBM Plex Mono",monospace}
+.phase{display:grid;grid-template-columns:96px minmax(0,1fr);gap:0 16px;border-top:1px solid var(--line);padding:14px 0}
+.phase:last-of-type{border-bottom:1px solid var(--line)}
+.phase .when{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--accent-ink);font-weight:600;padding-top:3px}
+.phase h4{margin:0 0 4px}
+.phase p,.phase ul{margin-bottom:4px}
+.phase .goal{font-size:13.5px;color:var(--ink-2)}
+.phase .goal b{color:var(--ink);font-weight:600}
+@media (max-width:640px){.phase{grid-template-columns:1fr}}
+footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="목차">
+  <div class="eyebrow">목차</div>
+  <a href="#verdict">0. 총평</a>
+  <a href="#product">1. 제품 정의</a>
+  <a href="#arch">2. 아키텍처와 데이터</a>
+  <a href="#modules">3. 모듈별 기획</a>
+  <a class="sub" href="#m0">M0 지원 파이프라인</a>
+  <a class="sub" href="#m1">M1 프로젝트·경험 뱅크</a>
+  <a class="sub" href="#m2">M2 지식 노트·퀴즈</a>
+  <a class="sub" href="#m3">M3 자격증 트랙</a>
+  <a class="sub" href="#m4">M4 코딩테스트</a>
+  <a class="sub" href="#m5">M5 이력서 버전관리</a>
+  <a class="sub" href="#m6">M6 면접·모의면접</a>
+  <a class="sub" href="#m7">M7 공개 프로필</a>
+  <a href="#ai">4. AI 통합과 MCP</a>
+  <a href="#roadmap">5. 로드맵</a>
+  <a href="#risks">6. 리스크와 결정 사항</a>
+</nav>
+
+<main>
+<header class="doc">
+  <div class="eyebrow">Product Plan · v0.1</div>
+  <h1>취준 OS 기획안</h1>
+  <p class="lede">공고 관리부터 학습, 이력서, 면접, 그리고 채용담당자에게 보여줄 공개 프로필까지. 노션과 문서 사이를 오가지 않고 한 곳에서 취업 준비 전체를 처리하는 개인 커리어 운영체제.</p>
+  <div class="meta">
+    <span><b>작성일</b> 2026-09-07</span>
+    <span><b>대상</b> 백엔드 개발 직군 취업준비생(본인)</span>
+    <span><b>목표 기업군</b> 서비스 기업 · 금융권 · 공기업</span>
+    <span><b>상태</b> 초안, 의사결정 대기</span>
+  </div>
+</header>
+
+<!-- ============ 0. 총평 ============ -->
+<section id="verdict">
+  <h2>0. 총평</h2>
+  <div class="eyebrow">기획에 대한 판단</div>
+  <p><b>방향은 맞습니다.</b> 다만 정체성을 바꿔야 합니다. 지금 기획은 "기능 6개가 모인 사이트"인데, 이 서비스의 본질은 <b>내 취업 컨텍스트를 한 곳에 쌓는 저장소 하나</b>와 그 저장소를 읽고 다시 채우는 뷰 여러 개입니다. 이렇게 정의해야 기능들 사이에 데이터가 흐르고, "책임 분리와 응집도"라는 말이 구호가 아니라 설계가 됩니다.</p>
+  <p>두 번째 메시지에서 말한 <b>"링크 하나로 나를 보여주는 증빙 자료"</b>는 부가 기능이 아니라 이 제품의 두 번째 얼굴입니다. 같은 데이터가 안쪽에서는 작업 공간이고, 바깥쪽에서는 증빙이 붙은 이력서가 됩니다. 이를 위해 모든 데이터에 처음부터 공개/비공개 구분을 둡니다.</p>
+
+  <div class="two">
+    <div>
+      <h4>잘 잡은 것</h4>
+      <ul>
+        <li><b>문제가 실제이고 사용자가 본인.</b> 검증 비용이 0에 가깝고, 매일 쓰면서 고칠 수 있습니다.</li>
+        <li><b>컨텍스트 집중.</b> 프로젝트·경험·지원 이력이 한 곳에 있으면 AI 산출물 품질이 근본적으로 달라집니다. 지금은 매번 노션에서 복사해 붙여야 합니다.</li>
+        <li><b>프로젝트 자체가 포트폴리오.</b> LLM 스트리밍, 버전관리 모델, 외부 API 연동, 권한 분리, 스케줄러가 전부 들어가는 백엔드 소재입니다.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>바로잡을 것</h4>
+      <ul>
+        <li><b>스코프.</b> 공채 시즌에 6개 모듈을 동시에 만들면 전부 미완성으로 끝납니다. 수직 슬라이스로 단계화하고 노션을 잠시 병행합니다.</li>
+        <li><b>"지원하자 한마디로 완성"은 목표가 아니라 방향.</b> 자소서는 근거 기반 초안까지만 자동이고, 최종 문장은 사람이 씁니다. 완전 자동은 획일적 문장과 기업 AI 필터 리스크를 부릅니다.</li>
+        <li><b>노션이 이미 잘하는 걸 다시 만드는 비용.</b> 공고 관리는 임포트로 흡수하고, 초기 2주는 노션과 병행해서 데이터 유실을 막습니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="eyebrow">한 문장 정의</div>
+    <p>내 프로젝트·경험·학습·지원 기록을 한 저장소에 쌓고, 그 위에서 지원서 초안·학습 퀴즈·모의면접을 돌리며, 바깥으로는 증빙이 붙은 공개 프로필을 내보내는 개인 커리어 OS.</p>
+  </div>
+</section>
+
+<!-- ============ 1. 제품 정의 ============ -->
+<section id="product">
+  <h2>1. 제품 정의</h2>
+  <div class="eyebrow">사용자 · 얼굴 · 원칙</div>
+  <h3>사용자</h3>
+  <ul>
+    <li><b>1차 사용자: 본인.</b> 매일 로그인해서 공고를 정리하고, 학습하고, 지원서를 쓰고, 면접을 연습합니다.</li>
+    <li><b>2차 사용자: 채용담당자·면접관.</b> 자소서의 링크란이나 이력서 하단의 URL을 열어 프로젝트, 글, 자격증, 활동 데이터를 훑습니다. 로그인 없음, 읽기 전용, 빠른 로딩.</li>
+  </ul>
+  <h3>두 개의 얼굴</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>얼굴</th><th>대상</th><th>보이는 것</th><th>절대 보이면 안 되는 것</th></tr></thead>
+    <tbody>
+      <tr><td><b>워크스페이스</b></td><td>본인</td><td>전부</td><td>-</td></tr>
+      <tr><td><b>공개 프로필</b></td><td>채용담당자, 지인</td><td>공개로 표시한 프로젝트·노트·자격증·활동 통계·현재 이력서</td><td>지원 현황, 기업 분석, 면접 기록, 자소서 초안, 코테 실패 로그, 개인 연락처 외 개인정보</td></tr>
+    </tbody>
+  </table></div>
+  <h3>설계 원칙</h3>
+  <ol>
+    <li><b>한 번 적은 것은 다시 적지 않는다.</b> 프로젝트에서 뽑은 경험이 이력서 블록, 자소서 근거, 면접 답변으로 재사용됩니다. 원본을 고치면 파생물에 반영 여부를 묻습니다.</li>
+    <li><b>AI 산출물은 항상 초안 상태로 태어난다.</b> 사람이 확인해서 확정하기 전까지는 어디에도 제출되지 않고 공개되지 않습니다.</li>
+    <li><b>기본값은 비공개.</b> 모든 엔티티에 공개 범위 필드가 있고, 공개는 항목 단위로 명시적으로 켭니다.</li>
+    <li><b>학습 엔진은 하나.</b> CS 퀴즈, 자격증 문제, 코테 재풀이, 스피킹 연습이 모두 같은 "문제 생성 → 시도 → 채점 → 재복습" 파이프라인을 씁니다. 모듈마다 엔진을 따로 만들지 않습니다.</li>
+    <li><b>취준이 먼저.</b> 개발은 주 10시간 이내, 각 단계는 끝나는 즉시 실사용 가능한 상태여야 합니다.</li>
+  </ol>
+</section>
+
+<!-- ============ 2. 아키텍처 ============ -->
+<section id="arch">
+  <h2>2. 아키텍처와 데이터</h2>
+  <div class="eyebrow">저장소 하나, 뷰 여덟, 어댑터 둘</div>
+
+  <div class="arch">
+    <div class="layer">
+      <div class="lab">뷰 · 워크스페이스와 공개 프로필</div>
+      <div class="boxes">
+        <span class="box">M0 지원 파이프라인</span><span class="box">M1 프로젝트·경험</span><span class="box">M2 노트·퀴즈</span><span class="box">M3 자격증</span><span class="box">M4 코테</span><span class="box">M5 이력서 버전</span><span class="box">M6 면접</span><span class="box hi">M7 공개 프로필</span>
+      </div>
+    </div>
+    <div class="split">
+      <div class="layer"><div class="lab">인터페이스 어댑터</div><div class="boxes"><span class="box">REST API (웹 프론트)</span><span class="box">MCP 서버 (외부 에이전트, 후순위)</span></div></div>
+      <div class="layer"><div class="lab">AI 게이트웨이</div><div class="boxes"><span class="box">컨텍스트 조립기</span><span class="box">프롬프트 템플릿·버전</span><span class="box">모델 라우팅</span><span class="box">호출 로그·비용</span></div></div>
+    </div>
+    <div class="layer core">
+      <div class="lab">도메인 서비스 · 컨텍스트 저장소 (핵심 자산)</div>
+      <div class="boxes">
+        <span class="box hi">Profile</span><span class="box hi">Project</span><span class="box hi">Experience (STAR)</span><span class="box">Company</span><span class="box">Application</span><span class="box">Document / Version / Block</span><span class="box">Note / Tag</span><span class="box">Question / Attempt / ReviewSchedule</span><span class="box">CertTrack</span><span class="box">InterviewSession</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="lab">외부 연동</div>
+      <div class="boxes"><span class="box">Claude API</span><span class="box">GitHub API (PR·커밋)</span><span class="box">브라우저 STT / TTS</span><span class="box">채용공고 URL (붙여넣기)</span><span class="box">노션 CSV 임포트</span></div>
+    </div>
+  </div>
+
+  <h3>데이터 흐름이 제품이다</h3>
+  <p>모듈은 독립 기능이 아니라 하나의 순환 고리입니다. 아래 흐름이 끊기는 곳이 있으면 그 기능은 아직 기획이 덜 된 것입니다.</p>
+  <div class="flow">
+    <span class="step">프로젝트 정리</span><span class="sep">→</span>
+    <span class="step">경험(STAR) 추출</span><span class="sep">→</span>
+    <span class="step">이력서 블록</span><span class="sep">→</span>
+    <span class="step">자소서 문항 근거</span><span class="sep">→</span>
+    <span class="step">예상 질문</span><span class="sep">→</span>
+    <span class="step">모의면접 답변</span><span class="sep">→</span>
+    <span class="step">경험 보강 · 노트</span><span class="sep">↺</span>
+  </div>
+  <p>학습 계열은 따로 돕니다. <b>노트 → 퀴즈 → 오답 → 재복습</b>. 자격증과 코테는 여기에 태그와 문제 유형만 다르게 얹습니다.</p>
+
+  <h3>핵심 엔티티</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>엔티티</th><th>역할</th><th>주요 필드</th><th>공개 가능</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Profile</td><td>나에 대한 고정 정보</td><td>소개, 기술 스택, 학력·성적, 어학, 링크</td><td>부분</td></tr>
+      <tr><td class="mono">Project</td><td>프로젝트 한 건</td><td>개요, 기간, 역할, 기능, 스택, 아키텍처, 성과 지표, 개선점, 레포·배포 링크</td><td>예</td></tr>
+      <tr><td class="mono">Experience</td><td>재사용 가능한 경험 단위</td><td>STAR 4필드, 역량 태그, 근거 링크(PR·노트), 사용 이력</td><td>선택</td></tr>
+      <tr><td class="mono">Company</td><td>기업 프로필(지원과 분리)</td><td>인재상, 핵심가치, 기술 스택, 채용 프로세스, 수집한 면접 질문</td><td>아니오</td></tr>
+      <tr><td class="mono">Application</td><td>한 번의 지원</td><td>상태, 마감, 준비물 체크리스트, 자소서 문항, 제출한 문서 버전, 결과, 회고</td><td>아니오</td></tr>
+      <tr><td class="mono">Document / Version / Block</td><td>이력서·포트폴리오·자소서와 그 이력</td><td>브랜치, 불변 스냅샷, 커밋 메시지, 블록 트리, 참조한 Experience</td><td>현재 공개 버전만</td></tr>
+      <tr><td class="mono">Note</td><td>개념·트러블슈팅·회고</td><td>마크다운 본문, 타입, 태그, 연결된 프로젝트</td><td>선택</td></tr>
+      <tr><td class="mono">Question / Attempt / ReviewSchedule</td><td>공용 학습 엔진</td><td>문제 유형, 출처(노트·자격증·코테·면접), 내 답, 채점, 다음 복습일</td><td>통계만</td></tr>
+      <tr><td class="mono">CertTrack</td><td>자격증 하나의 진행</td><td>시험 종류, 목표 회차, 출제기준 트리, 과목별 정답률, 취득일</td><td>취득분만</td></tr>
+      <tr><td class="mono">InterviewSession</td><td>모의면접 한 회</td><td>대상 기업, 문항, 전사, 시간, 평가 리포트</td><td>아니오</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>기술 스택 제안</h3>
+  <p>백엔드 지원자의 포트폴리오이므로 본인이 면접에서 설명할 수 있는 스택으로 고릅니다. 이미 익숙한 것을 기준으로 잡았습니다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>영역</th><th>선택</th><th>이유</th></tr></thead>
+    <tbody>
+      <tr><td>백엔드</td><td>Spring Boot 3 · Java 21</td><td>기존 경험 활용. 도메인 모듈 분리(멀티모듈 또는 패키지 경계)를 면접 소재로 삼기 좋음</td></tr>
+      <tr><td>DB</td><td>PostgreSQL</td><td>JSONB로 블록 트리·체크리스트 저장, 나중에 pgvector로 경험 검색 확장</td></tr>
+      <tr><td>캐시·세션</td><td>Redis</td><td>모의면접 세션 상태, 타이머, 복습 큐</td></tr>
+      <tr><td>프론트</td><td>Next.js</td><td>워크스페이스는 CSR, 공개 프로필은 SSR/정적 생성으로 빠르게</td></tr>
+      <tr><td>LLM</td><td>Claude API (Anthropic Java SDK)</td><td>스트리밍, 구조화 출력, 프롬프트 캐싱을 그대로 사용. 상세는 4장</td></tr>
+      <tr><td>음성</td><td>브라우저 Web Speech API → 서버 STT</td><td>MVP는 비용 0으로 시작, 정확도 필요해지면 교체</td></tr>
+      <tr><td>테스트·배포</td><td>Testcontainers · GitHub Actions · AWS</td><td>이미 쓰던 방식 그대로</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ 3. 모듈별 기획 ============ -->
+<section id="modules">
+  <h2>3. 모듈별 기획</h2>
+  <div class="eyebrow">각 모듈은 목적 · 유저 스토리 · 핵심 기능 · 데이터 · AI · MVP 경계 · 리스크로 정리</div>
+
+  <!-- M0 -->
+  <div class="module" id="m0">
+    <div class="head"><span class="code">M0</span><h3>지원 파이프라인</h3><div class="chips"><span class="chip accent">Phase 0</span><span class="chip">노션 대체</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>공고 발견부터 최종 결과까지 상태를 한눈에 보고, 마감을 놓치지 않고, 지원마다 무엇이 필요한지 체크한다. 지금 노션에서 수기로 하는 일을 그대로 흡수하되 입력을 자동화한다.</p></div>
+      <div class="k">유저 스토리</div><div><ul>
+        <li>공고 URL이나 본문을 붙여넣으면 회사·직무·마감·전형 절차·필요 서류·자소서 문항이 추출되어 카드가 생긴다.</li>
+        <li>칸반에서 카드를 옮긴다. 관심 → 지원 예정 → 작성 중 → 제출 → 서류 통과 → 필기·코테 → 면접 → 최종. 결과와 회고를 남긴다.</li>
+        <li>이번 주 마감과 다가오는 전형이 대시보드 상단에 뜬다.</li>
+        <li>카드 안에서 준비물을 체크한다. 이력서 버전, 문항별 자소서 상태, 성적증명, 자격증, 어학, 경험기술서.</li>
+        <li>같은 회사에 여러 번 지원해도 기업 분석은 한 번만 쌓인다.</li>
+      </ul></div>
+      <div class="k">핵심 기능</div><div><ul>
+        <li>칸반 보드 + 캘린더 뷰 + D-day 목록</li>
+        <li>지원 카드: 준비물 체크리스트, 자소서 문항 목록(M5 초안으로 연결), 제출한 문서 버전 고정</li>
+        <li>기업 프로필: 인재상, 핵심가치, 기술 스택, 채용 프로세스, 내가 모은 면접 질문, 최근 뉴스 메모</li>
+        <li>노션 CSV 임포트(첫날 만들 것). 기존 페이지의 필드를 그대로 매핑</li>
+      </ul></div>
+      <div class="k">데이터</div><div><p class="mono">Company, JobPosting, Application(status, deadline, result), Requirement(checklist), EssayQuestion, EssayDraft → Document</p></div>
+      <div class="k">AI</div><div><ul>
+        <li>공고 텍스트 → 구조화 추출. 스키마를 고정한 구조화 출력으로 처리해서 파싱 실패를 없앤다.</li>
+        <li>기업 분석 초안: 웹 검색 도구로 인재상·최근 이슈를 모아 요약. 사람이 확인 후 저장.</li>
+        <li>문항별 "내 경험 중 쓸 만한 것" 매칭 제안(M1 경험 뱅크 조회).</li>
+      </ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 칸반, 카드, 체크리스트, URL 추출, 노션 임포트, 기업 프로필 수동 입력.<br><b>이후:</b> 기업 분석 자동화, 알림(이메일·카카오), 채용 사이트 자동 수집.</p></div>
+      <div class="k">리스크</div><div><ul>
+        <li>채용 사이트 크롤링은 약관·차단 문제가 있다. 붙여넣기 방식으로 시작하고 자동 수집은 공식 API가 있는 곳만.</li>
+        <li>노션 병행 기간에 데이터가 갈라진다. 임포트를 2회 이상 멱등하게 돌릴 수 있게 만든다.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- M1 -->
+  <div class="module" id="m1">
+    <div class="head"><span class="code">M1</span><h3>프로젝트 · 경험 뱅크</h3><div class="chips"><span class="chip accent">Phase 0</span><span class="chip">컨텍스트의 원천</span><span class="chip ok">공개 가능</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>프로젝트 하나를 열면 무엇을 하는 서비스인지, 어떤 기술을 썼는지, 내가 무엇을 했는지, 무엇이 문제였고 어떻게 풀었는지, 무엇이 남았는지가 항목별로 보인다. 그리고 그 내용을 STAR 단위의 "경험"으로 쪼개서 이력서·자소서·면접에서 재사용한다.</p></div>
+      <div class="k">유저 스토리</div><div><ul>
+        <li>프로젝트 카드를 만들고 섹션을 채운다. 개요(한 줄, 기간, 팀 규모, 내 역할), 기능 목록, 기술 스택(언어·프레임워크·인프라·도구), 아키텍처 도식, 성과 지표(수치), 트러블슈팅, 개선점·미해결, 링크(레포·배포·PR).</li>
+        <li>GitHub 레포를 연결하면 PR 목록이 동기화되고, PR마다 요약과 "경험 후보"가 제안된다. 승인하면 경험 뱅크에 들어간다.</li>
+        <li>경험 하나를 열면 어느 자소서, 어느 면접 답변에 썼는지 사용 이력이 보인다.</li>
+      </ul></div>
+      <div class="k">핵심 기능</div><div><ul>
+        <li>프로젝트 카드 편집기(섹션 템플릿 고정)</li>
+        <li>경험(Experience) CRUD: 상황·과제·행동·결과 + 역량 태그(문제해결, 성능, 장애 대응, 협업, 설계) + 근거 링크</li>
+        <li>GitHub 동기화: PR 제목·본문·diff 요약 → 경험 후보</li>
+        <li>"면접관 시선" 점검: 프로젝트 설명을 읽고 면접관이 물을 법한 질문 5개를 뽑아 빈칸을 드러냄</li>
+      </ul></div>
+      <div class="k">데이터</div><div><p class="mono">Project, ProjectSection(type, body), TechStackItem, Metric, Experience(S,T,A,R, tags, evidence[], usages[]), PullRequestSummary</p></div>
+      <div class="k">AI</div><div><ul>
+        <li>PR 요약과 경험 후보 추출(배치 처리 가능)</li>
+        <li>프로젝트 설명 다듬기와 개선점 제안</li>
+        <li>경험 태깅 자동화</li>
+      </ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 수동 프로젝트 카드, 경험 CRUD, 태그.<br><b>이후:</b> GitHub 동기화, 면접관 시선 점검, 아키텍처 도식 편집.</p></div>
+      <div class="k">리스크</div><div><ul>
+        <li>경험을 너무 잘게 쪼개면 관리가 안 된다. 프로젝트당 5~8개 상한을 두고 병합을 유도한다.</li>
+        <li>회사 프로젝트·NDA 자료는 공개 프로필에서 자동 제외되도록 카드 단위 공개 플래그를 둔다.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- M2 -->
+  <div class="module" id="m2">
+    <div class="head"><span class="code">M2</span><h3>지식 노트 · 퀴즈</h3><div class="chips"><span class="chip">Phase 3</span><span class="chip">공용 학습 엔진</span><span class="chip ok">기술블로그로 공개</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>배운 것을 기록하고, 잊기 전에 다시 꺼내게 만들고, 그 내용을 면접 답변으로 이어준다. 기술블로그와 CS 복습을 하나의 노트 시스템으로 묶는다.</p></div>
+      <div class="k">유저 스토리</div><div><ul>
+        <li>개념 노트, 트러블슈팅 노트(상황·원인·해결·배운 점·재발 방지 템플릿), 회고 노트를 마크다운으로 쓴다.</li>
+        <li>"이 노트로 문제 내줘"를 누르면 객관식·단답·서술·꼬리질문이 생성되고 바로 푼다. 내 답이 채점되고 근거와 함께 피드백이 온다.</li>
+        <li>오늘의 복습 목록에 틀린 문제와 기한이 된 문제가 올라온다.</li>
+        <li>"다음에 뭐 공부하지"를 누르면 내 노트의 빈 곳과 지원 기업 스택을 기준으로 주제가 제안된다.</li>
+        <li>노트를 공개로 바꾸면 블로그 URL이 생긴다.</li>
+      </ul></div>
+      <div class="k">핵심 기능</div><div><ul>
+        <li>마크다운 편집기, 코드 블록, 태그 트리(네트워크·OS·DB·자료구조·Spring·JPA·인프라)</li>
+        <li>퀴즈 생성 → 풀이 → 채점 → 오답 → 간격 반복(SRS) 큐. 이 엔진을 M3·M4·M6이 공유</li>
+        <li>노트 ↔ 프로젝트 ↔ 경험 연결(트러블슈팅은 곧 면접 소재)</li>
+        <li>공개 노트 목록 페이지(M7 블로그 탭)</li>
+      </ul></div>
+      <div class="k">데이터</div><div><p class="mono">Note(type, body, tags, visibility), Question(source, type, rubric, answerKey), Attempt(answer, score, feedback), ReviewSchedule(nextDueAt, interval)</p></div>
+      <div class="k">AI</div><div><ul>
+        <li>문제 생성은 배치로 미리 만들어 두고(대량은 Batch API로 비용 절감), 풀 때는 채점만 호출</li>
+        <li>서술형 채점은 루브릭을 함께 주고 점수와 누락 키워드를 구조화 출력으로 받는다</li>
+        <li>노트 → 예상 면접 질문 변환(M6 질문 뱅크로 전송)</li>
+      </ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 노트 CRUD, 태그, 퀴즈 생성·풀이·채점.<br><b>이후:</b> SRS 스케줄링, 학습 주제 추천, 공개 블로그 SEO·RSS.</p></div>
+      <div class="k">리스크</div><div><ul>
+        <li>LLM 채점이 관대해지는 경향. 루브릭과 모범답안을 문제 생성 시점에 같이 만들어 채점 기준을 고정한다.</li>
+        <li>노트가 쌓이지 않으면 퀴즈도 없다. 트러블슈팅 템플릿을 프로젝트 화면에서 바로 열 수 있게 진입 장벽을 낮춘다.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- M3 -->
+  <div class="module" id="m3">
+    <div class="head"><span class="code">M3</span><h3>자격증 트랙</h3><div class="chips"><span class="chip">Phase 3</span><span class="chip">M2 엔진 재사용</span><span class="chip ok">취득 뱃지 공개</span></div></div>
+    <div class="spec">
+      <div class="k">현황</div><div><div class="tbl"><table>
+        <thead><tr><th>자격증</th><th>상태</th><th>시험 형태</th><th>학습 엔진 매핑</th></tr></thead>
+        <tbody>
+          <tr><td>SQLD</td><td><span class="chip ok">취득</span></td><td>객관식</td><td>공개 뱃지, SQL 문제는 M4와 연계</td></tr>
+          <tr><td>정보처리기사</td><td><span class="chip warn">실기 남음</span></td><td>필답형(단답·코드 빈칸·SQL)</td><td>코드 빈칸형 문제 생성</td></tr>
+          <tr><td>정보보안기사</td><td><span class="chip">필기 예정</span></td><td>객관식 → 실기 서술</td><td>객관식 + 서술형 채점</td></tr>
+          <tr><td>OPIc / 토익스피킹</td><td><span class="chip">예정</span></td><td>스피킹</td><td>M6 모의면접 엔진을 영어 모드로 재사용</td></tr>
+          <tr><td>투자자산운용사</td><td><span class="chip">예정</span></td><td>객관식</td><td>객관식 생성, 금융권 지원 시 이력서 반영</td></tr>
+          <tr><td>ADsP</td><td><span class="chip">예정</span></td><td>객관식·단답</td><td>객관식 생성</td></tr>
+        </tbody>
+      </table></div></div>
+      <div class="k">목적</div><div><p>자격증마다 출제기준을 기준으로 진도를 관리하고, 문제를 생성해 풀고, 오답을 복습한다. 시험 일정과 접수 기간을 지원 일정과 같은 캘린더에서 본다.</p></div>
+      <div class="k">유저 스토리</div><div><ul>
+        <li>자격증을 트랙으로 추가하면 출제기준 트리와 다음 회차 일정이 채워진다.</li>
+        <li>과목이나 세부 항목을 고르고 "10문제"를 누르면 그 자격증의 문제 형태로 생성된다.</li>
+        <li>과목별 정답률과 약한 항목이 보이고, 오답이 복습 큐에 들어간다.</li>
+        <li>취득하면 취득일과 함께 공개 프로필 뱃지가 켜진다.</li>
+      </ul></div>
+      <div class="k">핵심 기능</div><div><ul>
+        <li>자격증 마스터(시험 종류, 형태, 출제기준, 회차 일정)와 내 트랙(목표 회차, 상태, D-day)</li>
+        <li>항목별 노트(M2)와 문제(M2 엔진, 유형만 다름)</li>
+        <li>스피킹은 M6 세션을 영어 질문·제한시간·녹음 모드로 실행</li>
+      </ul></div>
+      <div class="k">데이터</div><div><p class="mono">Certification(master), CertTrack(target, status, acquiredAt), SyllabusNode(tree), Question(source=cert, syllabusNodeId)</p></div>
+      <div class="k">AI</div><div><ul><li>출제기준 항목 기반 문제 생성(기출 원문 저장 금지)</li><li>생성 문제의 사실 검증 체크: 내가 확인 표시를 해야 복습 큐에 남는다</li></ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 트랙·일정·출제기준 트리, M2 엔진으로 문제 생성.<br><b>이후:</b> 스피킹 모드, 과목별 약점 리포트.</p></div>
+      <div class="k">리스크</div><div><ul><li>기출문제 저작권. 출제기준과 내 노트만으로 생성하고 원문 업로드 기능은 두지 않는다.</li><li>생성 문제 오류로 잘못 외울 위험. 정처기 실기처럼 정답이 명확한 유형에 집중하고 애매한 문항은 표시한다.</li></ul></div>
+    </div>
+  </div>
+
+  <!-- M4 -->
+  <div class="module" id="m4">
+    <div class="head"><span class="code">M4</span><h3>코딩테스트</h3><div class="chips"><span class="chip">Phase 3</span><span class="chip ok">활동 잔디 공개</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>푼 문제를 기록해서 약점을 보고, 틀린 문제를 다시 풀게 만들고, 지원 기업의 코테 유형에 맞춰 준비한다.</p></div>
+      <div class="k">유저 스토리</div><div><ul>
+        <li>문제 링크와 결과, 걸린 시간, 막힌 지점, 참고 여부, 내 코드를 남긴다. 문제 본문은 저장하지 않는다.</li>
+        <li>유형별 정답률·시간 히트맵과 스트릭이 보인다.</li>
+        <li>틀렸거나 참고한 문제가 3일·7일·30일 뒤 재풀이 큐에 올라온다.</li>
+        <li>지원 기업을 고르면 그 회사 코테 유형에 맞는 추천 세트가 나온다.</li>
+        <li>내 코드를 붙이면 시간복잡도, 엣지 케이스, 더 나은 접근을 리뷰받는다. 정답 코드는 주지 않고 단계별 힌트만.</li>
+      </ul></div>
+      <div class="k">핵심 기능</div><div><ul>
+        <li>문제·시도 기록, 유형 태그(구현·그래프·DP·문자열·시뮬레이션·SQL 등)</li>
+        <li>대시보드: 히트맵, 스트릭, 재풀이 큐(M2 엔진의 ReviewSchedule 재사용)</li>
+        <li>기업별 유형 매핑. 예: 삼성 SW역량테스트는 구현·BFS·시뮬레이션, 카카오는 구현·문자열·자료구조, 금융권 필기는 기본 알고리즘과 SQL</li>
+        <li>SQL 문제 생성(SQLD 지식 유지 겸용)</li>
+      </ul></div>
+      <div class="k">데이터</div><div><p class="mono">Problem(platform, externalId, url, difficulty, tags), Attempt(durationSec, result, code, stuckAt, referenced), CompanyTestProfile(types[])</p></div>
+      <div class="k">AI</div><div><ul><li>코드 리뷰와 단계별 힌트</li><li>유사 문제·다음 문제 추천</li><li>시도 메모 → 유형 태그 자동 분류</li></ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 기록, 대시보드, AI 리뷰.<br><b>이후:</b> 브라우저 확장으로 제출 자동 기록, 기업별 추천 세트.</p></div>
+      <div class="k">리스크</div><div><ul><li>기록이 귀찮으면 안 쓴다. 링크 붙여넣기만으로 플랫폼·번호·난이도가 채워지게 하고 나머지는 선택 입력.</li></ul></div>
+    </div>
+  </div>
+
+  <!-- M5 -->
+  <div class="module" id="m5">
+    <div class="head"><span class="code">M5</span><h3>이력서 · 포트폴리오 · 자소서 버전관리</h3><div class="chips"><span class="chip accent">Phase 1</span><span class="chip">git 모델</span><span class="chip ok">현재 버전만 공개</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>마스터 문서 하나에서 기업별 파생본을 만들고, 무엇을 어디에 냈는지 추적하고, 언제든 되돌린다. 자소서는 문항별로 근거 경험과 함께 버전을 남긴다.</p></div>
+      <div class="k">모델</div><div>
+        <p>git과 같은 구조로 설명 가능하게 만듭니다. 그 자체가 면접 소재입니다.</p>
+        <ul>
+          <li><b>Document</b>: 이력서, 포트폴리오, 자소서(지원 단위)</li>
+          <li><b>Branch</b>: 마스터, 그리고 기업별 브랜치</li>
+          <li><b>Version</b>: 불변 스냅샷 + 메시지 + 시각. 되돌리기는 새 버전 생성</li>
+          <li><b>Block</b>: 섹션 단위(인적사항·기술·프로젝트·경험·자격증·수상). 블록은 M1의 프로젝트·경험을 <i>참조</i>하고, 원본이 바뀌면 반영 여부를 묻는다</li>
+        </ul>
+      </div>
+      <div class="k">유저 스토리</div><div><ul>
+        <li>마스터 이력서를 편집하고 "커밋"한다. 버전 목록에서 두 버전을 골라 diff를 본다.</li>
+        <li>지원 카드에서 "이 회사용 브랜치 만들기"를 누르면 마스터에서 갈라진 이력서가 생긴다.</li>
+        <li>제출 버튼을 누르면 해당 버전이 지원 카드에 고정되고 잠긴다.</li>
+        <li>자소서 문항마다 글자 수 제한 안에서 초안을 만들고 다듬는다. 각 문단에 근거 경험이 링크된다.</li>
+        <li>PDF로 내보내고, 공개 프로필에 노출할 버전을 고른다.</li>
+      </ul></div>
+      <div class="k">핵심 기능</div><div><ul>
+        <li>블록 편집기, 버전 저장, diff 뷰, 브랜치 생성, 복원, 제출 잠금</li>
+        <li>자소서 문항 초안, 글자 수 카운터, 근거 경험 링크</li>
+        <li>PDF 내보내기(템플릿 1~2종이면 충분)</li>
+      </ul></div>
+      <div class="k">데이터</div><div><p class="mono">Document(type), Branch(name, companyId?), Version(snapshot JSONB, message, createdAt, locked), Block(type, body, refs[]), EssayDraft(questionId, versionId, evidence[])</p></div>
+      <div class="k">AI</div><div><ul>
+        <li>문항 초안 생성. 반드시 경험 뱅크의 항목을 인용하고, 인용 없는 문장은 표시한다</li>
+        <li>글자 수 맞춤 축약·확장, 기업 인재상 대비 톤 점검</li>
+        <li>JD 요구 역량 대비 갭 리포트("이 공고는 대용량 처리 경험을 요구하는데 근거가 없다")</li>
+      </ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 문서·버전·브랜치·diff, 자소서 초안.<br><b>이후:</b> PDF 템플릿, 갭 리포트, 원본 변경 전파.</p></div>
+      <div class="k">리스크</div><div><ul>
+        <li>AI 초안을 그대로 내는 유혹. 생성본은 "초안" 상태에서 제출 버튼이 비활성화되고, 한 번 이상 수동 편집해야 확정된다.</li>
+        <li>버전이 너무 많아진다. 자동 저장은 임시본으로만 두고 커밋은 명시적으로.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- M6 -->
+  <div class="module" id="m6">
+    <div class="head"><span class="code">M6</span><h3>면접 준비 · 모의면접</h3><div class="chips"><span class="chip accent">Phase 2</span><span class="chip">실시간</span><span class="chip warn">비공개</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>내 모든 정보와 지원한 기업의 인재상을 바탕으로 예상 질문과 답변을 카테고리별로 쌓고, 제한시간이 있는 실시간 모의면접으로 순발력을 기른다.</p></div>
+      <div class="k">질문 뱅크</div><div>
+        <ul>
+          <li>카테고리: 인성·조직 적합, 기술(CS), 프로젝트 심층, 기업별, 상황·케이스, 영어</li>
+          <li>출처: 자동 생성, 수집한 기출, 직접 추가</li>
+          <li>질문마다 답변 초안, 근거 경험 링크, 핵심 키워드, 예상 꼬리질문</li>
+          <li>자동 생성 입력: 현재 이력서 버전 + 프로젝트 카드 + 지원 기업의 인재상·공고. 출력: 예상 질문 30개와 꼬리질문</li>
+        </ul>
+      </div>
+      <div class="k">모의면접 세션</div><div>
+        <ul>
+          <li><b>설정:</b> 대상(지원한 기업 중 선택, 또는 일반), 카테고리 비율, 문항 수, 질문당 제한시간(60~120초)</li>
+          <li><b>진행:</b> 질문 표시 → 타이머 → 음성으로 답변(전사) → 답변 내용에 따라 꼬리질문이 스트리밍으로 이어짐 → 다음 문항</li>
+          <li><b>리포트:</b> 문항별 전사, 두괄식 여부, 구체성(수치·근거 유무), 시간 사용, 키워드 매칭, 말버릇 빈도, 총평. 이전 세션과 비교한 변화</li>
+          <li><b>환류:</b> 좋았던 답변은 질문 뱅크의 모범 답안으로 승격</li>
+        </ul>
+      </div>
+      <div class="k">기업별 모드</div><div><p>M0에서 지원한 회사만 선택 가능. 그 회사의 인재상·핵심가치·공고·내가 제출한 자소서를 면접관 페르소나에 넣어서 "그 회사가 물어볼 법한" 질문을 만든다. 금융권과 공기업은 인성·직무 적합 비중을 높이고, 서비스 기업은 프로젝트 심층 비중을 높이는 프리셋을 둔다.</p></div>
+      <div class="k">데이터</div><div><p class="mono">InterviewQuestion(category, source, companyId?, answerDraft, evidence[], followUps[]), InterviewSession(config, companyId?), SessionTurn(question, transcript, durationSec, evaluation JSONB)</p></div>
+      <div class="k">AI · 기술</div><div><ul>
+        <li>질문 생성과 리포트는 일반 호출, 꼬리질문은 스트리밍</li>
+        <li>세션 동안 프로필·기업 컨텍스트는 시스템 프롬프트 앞부분에 고정해 프롬프트 캐싱을 태운다</li>
+        <li>음성: 1단계 브라우저 Web Speech API, 2단계 서버 STT. 질문 읽어주기(TTS)는 옵션</li>
+        <li>실시간 연결: 세션당 WebSocket 하나, 타이머는 서버가 권위</li>
+      </ul></div>
+      <div class="k">MVP 경계</div><div><p><b>포함:</b> 질문 뱅크 + 텍스트 입력 모의면접 + 리포트.<br><b>2단계:</b> 음성 입력. <b>3단계:</b> 실시간 꼬리질문, 기업별 프리셋, 세션 간 비교.</p></div>
+      <div class="k">리스크</div><div><ul>
+        <li>피드백이 뻔해진다. 루브릭을 명시하고, 항상 "이 답변에서 빠진 근거"를 M1 경험 뱅크에서 찾아 제시한다.</li>
+        <li>브라우저 STT는 한국어 인식률이 들쭉날쭉하다. 전사 편집 기능을 두고 정확도가 문제되면 서버 STT로 교체.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- M7 -->
+  <div class="module" id="m7">
+    <div class="head"><span class="code">M7</span><h3>공개 프로필</h3><div class="chips"><span class="chip accent">Phase 1 (라이트)</span><span class="chip">증빙이 붙은 이력서</span></div></div>
+    <div class="spec">
+      <div class="k">목적</div><div><p>링크 하나로 "이 사람"을 보여준다. 자소서 링크란, 이력서 하단, GitHub 프로필에 붙이는 URL. 코드·글·자격증·활동 데이터가 붙어 있어 이력서의 문장이 증빙으로 이어진다. 그리고 이 사이트 자체가 "직접 설계하고 구현했다"는 증빙이 된다.</p></div>
+      <div class="k">구성</div><div><ul>
+        <li><b>상단 요약:</b> 한 줄 소개, 기술 스택, 연락처(선택), GitHub·블로그 링크</li>
+        <li><b>프로젝트:</b> M1에서 공개로 표시한 카드. 기능·스택·역할·성과·트러블슈팅 요약</li>
+        <li><b>기술 노트:</b> M2 공개 노트 목록(블로그)</li>
+        <li><b>자격증:</b> M3 취득분과 취득일</li>
+        <li><b>활동:</b> M4 문제 풀이 잔디, M2 복습 통계. "꾸준함"의 증빙</li>
+        <li><b>이력서:</b> M5에서 공개로 지정한 현재 버전 1개, PDF 다운로드</li>
+        <li><b>이 사이트에 대하여:</b> 아키텍처, 스택, 만든 과정. 프로젝트 카드 중 하나로 자동 포함</li>
+      </ul></div>
+      <div class="k">원칙</div><div><ul>
+        <li>모든 엔티티에 <code>visibility</code>. 기본 비공개. 지원 현황·기업 분석·면접 기록·자소서는 공개 옵션 자체가 없음</li>
+        <li>로그인 없이 읽기 전용. SSR 또는 정적 생성으로 첫 화면 1초 내</li>
+        <li>개인정보 최소화: 학번·전화·생년 노출 금지, 연락은 이메일 또는 폼</li>
+        <li>OG 이미지와 메타 태그로 링크 미리보기가 깔끔하게 뜨게</li>
+        <li>본인 이름 도메인 사용</li>
+      </ul></div>
+      <div class="k">MVP 경계</div><div><p><b>라이트(Phase 1):</b> 프로젝트 카드 + 자격증 + 현재 이력서. 공채 자소서 링크란에 넣을 수 있는 최소 형태.<br><b>정식(Phase 4):</b> 블로그 탭, 활동 그래프, OG 이미지, 커스텀 도메인, 조회 로그.</p></div>
+      <div class="k">리스크</div><div><ul>
+        <li>공개 범위 실수. 공개 페이지는 별도 읽기 모델(뷰 전용 쿼리)만 사용하고, 비공개 엔티티는 그 모델에 애초에 존재하지 않게 한다.</li>
+        <li>내용이 비어 보이면 역효과. 프로젝트 2개, 노트 5개 이상 채워진 뒤에 링크를 배포한다.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. AI 통합 ============ -->
+<section id="ai">
+  <h2>4. AI 통합과 MCP</h2>
+  <div class="eyebrow">"MCP를 달아야 하나"에 대한 답</div>
+
+  <div class="callout">
+    <div class="eyebrow">결론</div>
+    <p><b>실시간 처리와 MCP는 별개의 문제입니다.</b> 웹앱 안의 AI 기능은 서버가 Claude API를 직접 호출하고, 필요한 데이터는 도구 호출로 내 DB에서 읽으면 됩니다. MCP는 MVP에 필요 없습니다. MCP가 가치 있는 지점은 따로 있고, 그건 Phase 4에 얇게 붙입니다.</p>
+  </div>
+
+  <h3>MCP는 무엇이고 언제 필요한가</h3>
+  <ul>
+    <li><b>MCP(Model Context Protocol)</b>는 도구와 데이터를 LLM 클라이언트(Claude Desktop, Claude Code 등)에 노출하는 표준입니다. 내 서버가 "제공자"가 되고, 외부 에이전트가 "소비자"가 됩니다.</li>
+    <li>우리 웹앱은 반대 방향입니다. 우리 서버가 Claude API의 소비자이고, 데이터는 이미 우리 DB에 있습니다. 여기에 MCP를 끼우면 계층만 하나 늘어납니다.</li>
+    <li><b>MCP가 빛나는 경우:</b> 내가 Claude Code나 Claude Desktop에서 "OO 자소서 초안 잡아줘"라고 말했을 때, 그 에이전트가 내 프로젝트·경험·지원 정보를 직접 읽게 하고 싶을 때. 즉 <b>내 컨텍스트를 어떤 도구에서든 쓰게 하는 것</b>입니다.</li>
+    <li>구현은 서비스 레이어 위에 REST 어댑터와 MCP 어댑터를 나란히 두는 것입니다. 읽기 도구 위주로 시작합니다: 프로필 조회, 경험 검색, 지원 목록, 기업 프로필. 이 구조 자체가 "포트와 어댑터" 설명이 되어 면접 소재가 됩니다.</li>
+  </ul>
+
+  <h3>실시간은 이렇게</h3>
+  <ul>
+    <li>모의면접의 꼬리질문은 Claude API 스트리밍을 받아 WebSocket으로 브라우저에 흘려보냅니다.</li>
+    <li>타이머는 서버가 관리하고 브라우저는 표시만 합니다. 새로고침해도 세션이 이어집니다.</li>
+    <li>음성 전사는 브라우저에서 하고, 텍스트만 서버로 보냅니다. 오디오 저장은 하지 않아 개인정보 부담을 줄입니다.</li>
+  </ul>
+
+  <h3>AI 게이트웨이 설계</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>구성요소</th><th>역할</th><th>메모</th></tr></thead>
+    <tbody>
+      <tr><td>컨텍스트 조립기</td><td>작업별로 필요한 것만 모아 프롬프트를 만든다. 프로필 요약 + 관련 경험 상위 몇 개 + 기업 프로필</td><td>초기엔 데이터가 작아 검색 없이 구조화 조립으로 충분. 경험이 100개를 넘으면 pgvector로 검색</td></tr>
+      <tr><td>프롬프트 템플릿</td><td>작업 유형별 템플릿을 파일로 관리하고 버전을 남긴다</td><td>템플릿 변경이 품질에 미친 영향을 호출 로그로 비교</td></tr>
+      <tr><td>구조화 출력</td><td>추출·채점·리포트는 JSON 스키마를 고정</td><td>파싱 실패와 필드 누락을 없앤다</td></tr>
+      <tr><td>프롬프트 캐싱</td><td>프로필·기업 컨텍스트를 시스템 프롬프트 앞에 고정 배치</td><td>모의면접처럼 한 세션에 여러 번 호출할 때 입력 비용이 크게 준다</td></tr>
+      <tr><td>호출 로그</td><td>입력·출력·토큰·비용·내 평가(좋아요/별로)를 남긴다</td><td>나중에 프롬프트 개선 근거. 비용 대시보드도 여기서</td></tr>
+      <tr><td>초안 게이트</td><td>모든 생성물은 draft 상태로 저장, 확정은 사람이</td><td>M5 제출 잠금, M3 사실 확인 체크와 연결</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>모델 선택</h3>
+  <p>기본은 품질이 결과를 좌우하는 작업이므로 Claude Opus 5로 시작하고, 호출 로그로 비용을 보면서 대량·단순 작업만 아래 등급으로 내립니다. 개인 사용량 기준으로는 월 몇천 원에서 몇만 원 수준입니다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>작업</th><th>기본 모델</th><th>비용 절감 옵션</th><th>호출 방식</th></tr></thead>
+    <tbody>
+      <tr><td>자소서 초안, 면접 리포트, 코드 리뷰, 갭 리포트</td><td class="mono">claude-opus-5</td><td>유지 권장</td><td>스트리밍, 적응형 사고</td></tr>
+      <tr><td>모의면접 꼬리질문</td><td class="mono">claude-opus-5</td><td>-</td><td>스트리밍 + 프롬프트 캐싱</td></tr>
+      <tr><td>퀴즈·자격증 문제 생성, PR 요약</td><td class="mono">claude-opus-5</td><td class="mono">claude-sonnet-5</td><td>Batch API로 미리 생성(정가의 50%)</td></tr>
+      <tr><td>공고 추출, 태그 분류, 단답 채점</td><td class="mono">claude-opus-5</td><td class="mono">claude-haiku-4-5</td><td>구조화 출력, 짧은 응답</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>모델</th><th>입력 $/1M 토큰</th><th>출력 $/1M 토큰</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">claude-opus-5</td><td class="num">5.00</td><td class="num">25.00</td></tr>
+      <tr><td class="mono">claude-sonnet-5</td><td class="num">2.00</td><td class="num">10.00</td></tr>
+      <tr><td class="mono">claude-haiku-4-5</td><td class="num">1.00</td><td class="num">5.00</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>"OO 지원하자" 파이프라인</h3>
+  <p>원래 그린 궁극의 시나리오를 단계로 풀면 아래와 같습니다. <b>굵게 표시한 곳</b>이 사람이 개입하는 지점이고, 이 지점을 없애는 것이 목표가 아닙니다.</p>
+  <ol>
+    <li>공고 URL 입력 → 추출 → 지원 카드 생성 (M0)</li>
+    <li>공고 요구 역량 ↔ 경험 뱅크 매칭 → 갭 리포트 (M1·M5)</li>
+    <li>문항별 초안 생성, 근거 경험 인용 → <b>내가 편집하고 커밋</b> (M5)</li>
+    <li>기업용 이력서 브랜치 생성 → <b>내가 다듬고 제출 잠금</b> (M5)</li>
+    <li>예상 질문 30개 생성 → <b>답변 초안 검토</b> → 모의면접 세션 예약 (M6)</li>
+    <li>제출 → 전형 진행 → 결과 → <b>회고 작성</b> → 경험·질문 뱅크로 환류 (M0·M1·M6)</li>
+  </ol>
+</section>
+
+<!-- ============ 5. 로드맵 ============ -->
+<section id="roadmap">
+  <h2>5. 로드맵</h2>
+  <div class="eyebrow">하반기 공채 일정에 맞춘 순서 · 각 단계는 끝나는 즉시 실사용</div>
+  <p>하반기 공채는 대체로 9~10월 서류, 10~11월 필기·코테, 11~12월 면접으로 흐릅니다. 모듈 순서는 이 흐름을 따릅니다. 학습 계열(M2·M3·M4)은 겨울 시험을 겨냥해 뒤에 둡니다.</p>
+
+  <div class="phase">
+    <div class="when">Phase 0<br>9월 2~3주</div>
+    <div>
+      <h4>뼈대 + 지원 파이프라인 + 경험 뱅크</h4>
+      <p class="goal"><b>완료 기준:</b> 노션을 열지 않아도 공고 관리가 된다.</p>
+      <ul>
+        <li>프로젝트 골격, 인증, 도메인 모듈 경계, DB 스키마</li>
+        <li>M0: 칸반·카드·체크리스트·URL 추출·노션 CSV 임포트</li>
+        <li>M1: 프로젝트 카드, 경험 CRUD</li>
+        <li>AI 게이트웨이 최소형: 템플릿 1개, 구조화 출력, 호출 로그</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="when">Phase 1<br>10월</div>
+    <div>
+      <h4>문서 버전관리 + 자소서 초안 + 공개 프로필 라이트</h4>
+      <p class="goal"><b>완료 기준:</b> 실제 공채 자소서 1건을 이 시스템에서 써서 제출하고, 링크란에 프로필 URL을 넣는다.</p>
+      <ul>
+        <li>M5: 문서·버전·브랜치·diff, 문항 초안, 제출 잠금</li>
+        <li>M7 라이트: 프로젝트 카드 + 자격증 + 이력서 공개 페이지, 본인 도메인</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="when">Phase 2<br>10~11월</div>
+    <div>
+      <h4>질문 뱅크 + 모의면접</h4>
+      <p class="goal"><b>완료 기준:</b> 첫 실제 면접 전에 기업별 모의면접을 3회 이상 돌린다.</p>
+      <ul>
+        <li>M6: 질문 뱅크, 자동 생성, 텍스트 모의면접, 리포트</li>
+        <li>M6 2단계: 음성 입력, 스트리밍 꼬리질문</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="when">Phase 3<br>11~12월</div>
+    <div>
+      <h4>학습 엔진 + 자격증 + 코테</h4>
+      <p class="goal"><b>완료 기준:</b> 정보처리기사 실기와 다음 자격증 준비를 이 시스템에서 한다.</p>
+      <ul>
+        <li>M2: 노트, 퀴즈 생성·채점, 복습 큐</li>
+        <li>M3: 트랙·일정·출제기준, M2 엔진 재사용</li>
+        <li>M4: 기록·대시보드·AI 리뷰</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="when">Phase 4<br>2027년 초</div>
+    <div>
+      <h4>연동과 확장</h4>
+      <p class="goal"><b>완료 기준:</b> Claude Code에서 내 컨텍스트를 바로 읽어 초안을 만든다.</p>
+      <ul>
+        <li>GitHub PR 동기화, MCP 서버(읽기 도구), 알림, 공개 프로필 정식(블로그·활동 그래프·OG)</li>
+        <li>pgvector 경험 검색, 스피킹 모드</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>운영 규칙</h3>
+  <ul>
+    <li>주 10시간 상한. 공채 마감 주에는 개발을 멈춘다.</li>
+    <li>수직 슬라이스만. 화면 없는 API, API 없는 화면은 만들지 않는다.</li>
+    <li>매 Phase 종료 시 "이 사이트에 대하여" 프로젝트 카드를 갱신한다. 그것이 곧 포트폴리오 문서다.</li>
+  </ul>
+</section>
+
+<!-- ============ 6. 리스크 ============ -->
+<section id="risks">
+  <h2>6. 리스크와 결정 사항</h2>
+  <div class="eyebrow">먼저 정해야 진행되는 것들</div>
+  <div class="tbl"><table>
+    <thead><tr><th>리스크</th><th>영향</th><th>대응</th></tr></thead>
+    <tbody>
+      <tr><td>개발이 취준을 잡아먹음</td><td>둘 다 미완성</td><td>주 10시간 상한, Phase별 실사용 기준, 노션 병행</td></tr>
+      <tr><td>AI 초안을 그대로 제출</td><td>획일적 문장, 필터 리스크</td><td>초안 게이트, 수동 편집 전 제출 불가, 근거 인용 필수</td></tr>
+      <tr><td>공개 범위 실수</td><td>지원 현황·기업 분석 노출</td><td>공개 전용 읽기 모델, 비공개 옵션이 없는 엔티티 명시</td></tr>
+      <tr><td>기출·공고 저작권</td><td>법적 문제</td><td>원문 저장 금지, 링크와 출제기준만</td></tr>
+      <tr><td>LLM 비용 폭주</td><td>월 비용 예측 불가</td><td>호출 로그·비용 대시보드, 대량 작업은 Batch, 캐싱</td></tr>
+      <tr><td>데이터 채워지지 않음</td><td>AI 품질 저하, 빈 프로필</td><td>노션 임포트, GitHub 동기화, 입력 최소화 UX</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>결정이 필요한 것</h3>
+  <ol>
+    <li><b>스택 확정.</b> 위 제안(Spring Boot · PostgreSQL · Next.js)으로 갈지, 프론트를 더 가볍게(서버 템플릿) 갈지.</li>
+    <li><b>노션 병행 기간.</b> Phase 0 종료 시점에 노션을 완전히 닫을지, 10월까지 둘지.</li>
+    <li><b>공개 프로필 도메인.</b> 본인 이름 도메인을 지금 살지.</li>
+    <li><b>음성 모의면접 우선순위.</b> 텍스트 모의면접만으로 Phase 2를 마치고 음성은 첫 면접 이후로 미룰지.</li>
+    <li><b>첫 실사용 대상.</b> Phase 1에서 실제로 이 시스템으로 제출할 공채 1건을 지금 고를지.</li>
+  </ol>
+
+  <div class="callout warn">
+    <div class="eyebrow">다음 액션</div>
+    <ul>
+      <li>노션 데이터베이스 CSV 내보내기 → 필드 목록 확인 → 임포트 스키마 확정</li>
+      <li>Phase 0 저장소 생성, 도메인 모듈 경계와 엔티티 스키마 작성</li>
+      <li>프로젝트 2개를 M1 형식으로 먼저 정리(공개 프로필의 최소 콘텐츠)</li>
+    </ul>
+  </div>
+</section>
+
+<footer>취준 OS 기획안 v0.1 · 2026-09-07 · 본인 열람용 초안. 결정 사항이 정해지면 v0.2에서 화면 와이어프레임과 API 목록을 추가.</footer>
+</main>
+</div>
