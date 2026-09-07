@@ -1,0 +1,27 @@
+# env
+.env
+.env.local
+*.local
+
+# java / gradle
+backend/build/
+backend/.gradle/
+backend/out/
+*.class
+*.log
+
+# node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+
+# ide / os
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# data
+postgres-data/
+uploads/
