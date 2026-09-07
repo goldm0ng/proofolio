@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: proofolio
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:proofolio}
+    username: ${POSTGRES_USER:proofolio}
+    password: ${POSTGRES_PASSWORD:proofolio}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  api-token: ${APP_API_TOKEN:dev-token}
+  owner-username: me
+  claude:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${CLAUDE_MODEL:claude-opus-5}
+
+logging:
+  level:
+    com.proofolio: INFO
